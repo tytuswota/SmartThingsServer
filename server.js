@@ -3,8 +3,10 @@ import { dirname } from 'path';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
+import cors from 'cors';
 
 var app = express();
+app.use(cors());
 
 var PORT = 3000;
 
@@ -18,28 +20,34 @@ const queryApi = client.getQueryApi(org)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-app.get('/', function(req, res) {
+app.get('/', cors(), function(req, res) {
     console.log(__dirname);
 
     res.sendFile(path.join(__dirname, "index.html"));
 });
+
+// getting the influx data
 
 app.listen(PORT, function() {
      console.log('Server is on port:', PORT);
 });
 
 const query = `from(bucket: "HomeStation") |> range(start: -7d)`
-queryApi.queryRows(query, {
-  next(row, tableMeta) {
-    const o = tableMeta.toObject(row)
-    console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`)
-  },
-  error(error) {
-    console.error(error)
-    console.log('Finished ERROR')
-  },
-  complete() {
-    console.log('Finished SUCCESS')
-  },
-})
+app.post('/get_weather_data', cors(), function(req, res) {
+  queryApi.queryRows(query, {
+    next(row, tableMeta) {
+      const fluxMessage = tableMeta.toObject(row);
+      res.sendDate(fluxMessage);
+      //console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`)
+    },
+    error(error) {
+      console.error(error);
+      console.log('Finished ERROR');
+    },
+    complete() {
+      console.log('Finished SUCCESS');
+    },
+  })
+});
+
 

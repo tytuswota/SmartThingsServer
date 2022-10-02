@@ -3,22 +3,35 @@
     <head>
         <title>OSM and Leaflet</title>
         <link rel = "stylesheet" href = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css"/>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     </head>
 <body>
-<div id = "map" style = "width: 100%; height: 1000px"></div>
-<script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
-<script>
-    var mapOptions = {
-            center: [51.926517, 4.462456],
-            zoom: 8
-         }
-        
-         var map = new L.map('map', mapOptions);
-         
-         var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-         
-         map.addLayer(layer);
-      </script>
-   </body>
+    <script>
+        function getData()
+        {
+            var messageFromFlux;
+            $.post("localhost:3000/get_weather_data", function( data ) {
+                messageFromFlux = data;
+            });
+
+            console.log(messageFromFlux);
+        }
+    </script>
+    <button onclick="getData()">Testing</button>
+    <div id = "map" style = "width: 100%; height: 1000px"></div>
+    <script src = "http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <script>
+        var mapOptions = {
+                center: [51.926517, 4.462456],
+                zoom: 8
+             }
+            
+             var map = new L.map('map', mapOptions);
+             
+             var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+             
+             map.addLayer(layer);
+    </script>
+</body>
    
 </html>
