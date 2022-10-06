@@ -9,12 +9,9 @@
     <script>
         function getData()
         {
-            var messageFromFlux;
-            $.post("localhost:3000/get_weather_data", function( data ) {
-                messageFromFlux = data;
+            $.get("http://localhost:3000/get_weather_data", function( data ) {
+                console.log(data);
             });
-
-            console.log(messageFromFlux);
         }
     </script>
     <button onclick="getData()">Testing</button>

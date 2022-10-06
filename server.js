@@ -1,13 +1,11 @@
-import express from 'express';
+import express, { json } from 'express';
 import { dirname } from 'path';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
-import cors from 'cors';
 import configJson from './config.json' assert {type: 'json'};
 
 var app = express();
-app.use(cors());
 
 var PORT = 3000;
 
@@ -22,9 +20,7 @@ const client = new InfluxDB({url: url, token: token})
 
 const queryApi = client.getQueryApi(org)
 
-
-
-app.get('/', cors(), function(req, res) {
+app.get('/', function(req, res) {
     console.log(__dirname);
 
     res.sendFile(path.join(__dirname, "index.html"));
@@ -36,13 +32,15 @@ app.listen(PORT, function() {
      console.log('Server is on port:', PORT);
 });
 
-const query = `from(bucket: "HomeStation") |> range(start: -7d)`
-app.post('/get_weather_data', cors(), function(req, res) {
+const query = `from(bucket: "HomeStation") |> range(start: -2d)`
+app.get('/get_weather_data', function(req, res) {
+  var array = [];
+  
   queryApi.queryRows(query, {
     next(row, tableMeta) {
       const fluxMessage = tableMeta.toObject(row);
-      res.sendDate(fluxMessage);
-      //console.log(`${o._time} ${o._measurement}: ${o._field}=${o._value}`)
+      array.push(fluxMessage);
+      //console.log(`${fluxMessage._time} ${fluxMessage._measurement}: ${fluxMessage._field}=${fluxMessage._value}`)
     },
     error(error) {
       console.error(error);
@@ -50,8 +48,11 @@ app.post('/get_weather_data', cors(), function(req, res) {
     },
     complete() {
       console.log('Finished SUCCESS');
+      res.send({array});
     },
   })
+
+  
 });
 
 
