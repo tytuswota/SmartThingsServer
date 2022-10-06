@@ -4,21 +4,25 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { InfluxDB, Point } from '@influxdata/influxdb-client'
 import cors from 'cors';
+import configJson from './config.json' assert {type: 'json'};
 
 var app = express();
 app.use(cors());
 
 var PORT = 3000;
 
-const token = 'JcT4vEfQLAAVh3fHBC-BmYsTGF1kM9eKbEo4ZXV-Zpd8BFVgW_L0q78JHRyueQwIOnkdz4--461U9LUy97e53A=='
-const org = 'HomeStation'
-
-const client = new InfluxDB({url: 'https://influx.timb.one', token: token})
-
-const queryApi = client.getQueryApi(org)
+const token = configJson.token;
+const org = configJson.org;
+const url = configJson.url;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const client = new InfluxDB({url: url, token: token})
+
+const queryApi = client.getQueryApi(org)
+
+
 
 app.get('/', cors(), function(req, res) {
     console.log(__dirname);
