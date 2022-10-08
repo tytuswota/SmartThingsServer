@@ -32,7 +32,10 @@ app.listen(PORT, function() {
      console.log('Server is on port:', PORT);
 });
 
-const query = `from(bucket: "HomeStation") |> range(start: -2d)`
+const query = `from(bucket: "HomeStation") |> range(start: -7d)`
+//const query = `from(bucket: "HomeStation") |> range(start: -30d) |> distinct(column: "tag")`
+
+//const query = `SHOW TAG VALUES WITH key = path`;
 app.get('/get_weather_data', function(req, res) {
   var array = [];
   
@@ -48,7 +51,7 @@ app.get('/get_weather_data', function(req, res) {
     },
     complete() {
       console.log('Finished SUCCESS');
-      res.send({array});
+      res.send(array);
     },
   })
 
