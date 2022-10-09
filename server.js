@@ -16,15 +16,28 @@ const url = configJson.url;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+app.use(express.static(__dirname + '/assets/'));
+
 const client = new InfluxDB({url: url, token: token})
 
 const queryApi = client.getQueryApi(org)
 
 app.get('/', function(req, res) {
-    console.log(__dirname);
-
     res.sendFile(path.join(__dirname, "index.html"));
 });
+
+//gets the javascript script
+app.get('/assets/scripts/map.js', function(req, res)
+{
+  res.sendFile(path.join(__dirname, "/assets/scripts/map.js"))
+});
+
+//gets css
+app.get('/assets/styles/app.css', function(req, res)
+{
+  res.sendFile(path.join(__dirname, "/assets/styles/app.css"))
+});
+
 
 // getting the influx data
 
@@ -32,18 +45,25 @@ app.listen(PORT, function() {
      console.log('Server is on port:', PORT);
 });
 
-const query = `from(bucket: "HomeStation") |> range(start: -7d)`
-//const query = `from(bucket: "HomeStation") |> range(start: -30d) |> distinct(column: "tag")`
+//const query = `from(bucket: "HomeStation") |> range(start: -7d)`
+const query = `from(bucket: "HomeStation") 
+    |> range(start: -7d) 
+    |> group(columns: ["_field","tag"])
+    |> sort(columns: ["_time"],desc:true)
+    |> limit(n:1)
+    |> group(columns: ["tag"])`
+                
+// const query = `from(bucket: "HomeStation") 
+//   |> range(start: -30d) 
+//   |> sort()
+//   |> distinct(column: "tag")`
 
-//const query = `SHOW TAG VALUES WITH key = path`;
 app.get('/get_weather_data', function(req, res) {
   var array = [];
-  
   queryApi.queryRows(query, {
     next(row, tableMeta) {
       const fluxMessage = tableMeta.toObject(row);
       array.push(fluxMessage);
-      //console.log(`${fluxMessage._time} ${fluxMessage._measurement}: ${fluxMessage._field}=${fluxMessage._value}`)
     },
     error(error) {
       console.error(error);
@@ -51,7 +71,8 @@ app.get('/get_weather_data', function(req, res) {
     },
     complete() {
       console.log('Finished SUCCESS');
-      res.send(array);
+      // console.log(array);
+      res.send({array});
     },
   })
 
