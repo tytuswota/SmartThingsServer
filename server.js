@@ -46,12 +46,12 @@ app.listen(PORT, function() {
 });
 
 //const query = `from(bucket: "HomeStation") |> range(start: -7d)`
-const query = `from(bucket: "HomeStation") 
-    |> range(start: -7d) 
-    |> group(columns: ["_field","tag"])
-    |> sort(columns: ["_time"],desc:true)
-    |> limit(n:1)
-    |> group(columns: ["tag"])`
+const query = `from(bucket: "HomeStation")
+|> range(start: -1h)
+|> filter(fn: (r) => r["_measurement"] == "HomeStation")
+|> last()
+|> group(columns: ["tag"])
+|> yield(name: "last")`
                 
 // const query = `from(bucket: "HomeStation") 
 //   |> range(start: -30d) 
