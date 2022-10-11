@@ -1,5 +1,6 @@
 {
     "token":"<Put Token Here>",
     "org":"HomeStation",
-    "url":"https://influx.timb.one"
+    "url":"https://influx.timb.one",
+    "mapboxglAccessToken":"<Put Token Here>"
 }

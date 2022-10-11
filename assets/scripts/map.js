@@ -1,4 +1,19 @@
-mapboxgl.accessToken = 'pk.eyJ1IjoiZG9ubHV5ZW5kaWprIiwiYSI6ImNsN3lpaHJtZDBsNmwzb210azJzY3Q3eWcifQ.IpyU5qZRzyUOXwnc4GaSeQ'
+function getToken()
+{
+    var token = null;
+
+    jQuery.ajax({
+        url: '/config',
+        success: function (result) {
+            token = result.mapboxglAccessToken;
+        },
+        async: false
+    });
+
+    return token;
+}
+
+mapboxgl.accessToken = getToken();
 
 var homeStations = [];
 
@@ -6,7 +21,7 @@ function getData()
 {
     var array = [];
     var tableArray = {};
-    $.get("http://localhost:3000/get_weather_data", function( data ) {
+    $.get("/get_weather_data", function( data ) {
 
         for(i=0; i < data.array.length; i++)
         {

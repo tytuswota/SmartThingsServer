@@ -26,6 +26,10 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+app.get('/config', function(req, res) {
+  res.sendFile(path.join(__dirname, "config.json"))
+});
+
 //gets the javascript script
 app.get('/assets/scripts/map.js', function(req, res)
 {
