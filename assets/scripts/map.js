@@ -6,7 +6,7 @@ function getData()
 {
     var array = [];
     var tableArray = {};
-    $.get("http://localhost:3000/get_weather_data", function( data ) {
+    $.get("/get_weather_data", function( data ) {
 
         for(i=0; i < data.array.length; i++)
         {
