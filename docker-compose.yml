@@ -1,5 +1,6 @@
 services:
   server:
+    container_name: HomeStation
     build: .
     ports:
       - 3000:3000
